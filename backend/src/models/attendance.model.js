@@ -3,12 +3,6 @@ import { ATTENDANCE_STATUS } from "../constants/attendance.constants.js";
 
 const attendanceSchema = new mongoose.Schema(
     {
-        classSection: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "ClassSection",
-            required: true
-        },
-
         student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Student",
@@ -18,6 +12,12 @@ const attendanceSchema = new mongoose.Schema(
         subject: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject",
+            required: true
+        },
+
+        class: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Class",
             required: true
         },
 
@@ -34,20 +34,13 @@ const attendanceSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: Object.values(ATTENDANCE_STATUS),
-            required: true
+            enum: ["Present", "Absent", "Late"],
+            default: "Present"
         },
 
         remarks: {
             type: String,
-            trim: true,
             default: ""
-        },
-
-        markedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true
         }
     },
     {
@@ -55,41 +48,20 @@ const attendanceSchema = new mongoose.Schema(
     }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Prevent duplicate attendance
-|--------------------------------------------------------------------------
-*/
-
-attendanceSchema.index(
-    {
-        student: 1,
-        subject: 1,
-        attendanceDate: 1
-    },
-    {
-        unique: true
-    }
-);
-
-/*
-|--------------------------------------------------------------------------
-| Reporting indexes
-|--------------------------------------------------------------------------
-*/
-
 attendanceSchema.index({
-    classSection: 1,
+    class: 1,
+    subject: 1,
     attendanceDate: 1
 });
 
 attendanceSchema.index({
-    teacher: 1
+    student: 1,
+    attendanceDate: 1
 });
 
-const Attendance = mongoose.model(
-    "Attendance",
-    attendanceSchema
-);
+attendanceSchema.index({
+    teacher: 1,
+    attendanceDate: 1
+});
 
-export default Attendance;
+export default mongoose.model("Attendance", attendanceSchema);

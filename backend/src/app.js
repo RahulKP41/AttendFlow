@@ -97,7 +97,6 @@ app.get("/", (req, res) => {
 | API Routes
 |--------------------------------------------------------------------------
 */
-
 app.use(`/api/${config.app.apiVersion}`, routes);
 
 /*
