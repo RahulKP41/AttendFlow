@@ -1,6 +1,5 @@
 import express from "express";
 import routes from "./routes/index.js";
-import config from "./config/environment.js";
 import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
