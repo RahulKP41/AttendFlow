@@ -2,8 +2,13 @@ import { Router } from "express";
 
 import authenticate from "../middlewares/authenticate.middleware.js";
 import authorize from "../middlewares/authorize.middleware.js";
-import { createStudentSchema } from "../validators/admin.validator.js";
-
+import validate from "../middlewares/validate.middleware.js";
+import {
+    createTeacherSchema,
+    updateTeacherSchema,
+    createStudentSchema,
+    updateStudentSchema
+} from "../validators/admin.validator.js";
 import {
     dashboard,
     createTeacherHandler,
@@ -11,7 +16,11 @@ import {
     getTeacherByIdHandler,
     updateTeacherHandler,
     deleteTeacherHandler,
-    getStudentsHandler
+    createStudentHandler,
+    getStudentsHandler,
+    getStudentByIdHandler,
+    updateStudentHandler,
+    deleteStudentHandler
 } from "../controllers/admin.controller.js";
 
 
@@ -74,4 +83,25 @@ router.get(
     getStudentsHandler
 );
 
+router.get(
+    "/students/:id",
+    authenticate,
+    authorize("ADMIN"),
+    getStudentByIdHandler
+);
+
+router.put(
+    "/students/:id",
+    authenticate,
+    authorize("ADMIN"),
+    validate(updateStudentSchema),
+    updateStudentHandler
+);
+
+router.delete(
+    "/students/:id",
+    authenticate,
+    authorize("ADMIN"),
+    deleteStudentHandler
+);
 export default router;

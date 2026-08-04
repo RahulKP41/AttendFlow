@@ -7,8 +7,11 @@ import { updateTeacher } from "../services/admin.service.js";
 import { deleteTeacher } from "../services/admin.service.js";
 import {
     createStudent,
+    createTeacher,
     getStudents,
-    getStudentById
+    getStudentById,
+    updateStudent,
+    deleteStudent
 } from "../services/admin.service.js";
 
 
@@ -129,6 +132,51 @@ export const getStudentByIdHandler = asyncHandler(async (req, res) => {
             200,
             student,
             "Student fetched successfully."
+        )
+    );
+
+});
+
+export const createTeacherHandler = asyncHandler(async (req, res) => {
+
+    const teacher = await createTeacher(req.body);
+
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            teacher,
+            "Teacher created successfully."
+        )
+    );
+
+});
+
+export const updateStudentHandler = asyncHandler(async (req, res) => {
+
+    const student = await updateStudent(
+        req.params.id,
+        req.body
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            student,
+            "Student updated successfully."
+        )
+    );
+
+});
+
+export const deleteStudentHandler = asyncHandler(async (req, res) => {
+
+    const result = await deleteStudent(req.params.id);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            result,
+            result.message
         )
     );
 

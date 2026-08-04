@@ -64,3 +64,27 @@ export const createStudentSchema = z.object({
         gender: z.enum(["Male", "Female", "Other"])
     })
 });
+
+export const updateStudentSchema = z.object({
+    body: z.object({
+        firstName: z.string().trim().min(2).max(50),
+
+        lastName: z.string().trim().min(2).max(50),
+
+        email: z.string().trim().email(),
+
+        enrollmentNumber: z.string().trim().min(3),
+
+        rollNumber: z.string().trim().min(3),
+
+        department: z.string().trim().min(2),
+
+        semester: z.number().min(1).max(8),
+
+        section: z.string().trim().min(1).max(5),
+
+        phone: z.string().trim().min(10).max(15),
+
+        gender: z.enum(["Male", "Female", "Other"])
+    })
+});

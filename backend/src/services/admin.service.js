@@ -468,3 +468,108 @@ export const getStudentById = async (studentId) => {
     return student;
 
 };
+
+export const updateStudent = async (studentId, payload) => {
+
+    const session = await mongoose.startSession();
+
+    session.startTransaction();
+
+    try {
+
+        const student = await Student.findById(studentId).session(session);
+
+        if (!student) {
+            throw new ApiError(404, "Student not found.");
+        }
+
+        const user = await User.findById(student.user).session(session);
+
+        if (!user) {
+            throw new ApiError(404, "User not found.");
+        }
+
+        const existingEmail = await User.findOne({
+            email: payload.email,
+            _id: { $ne: user._id }
+        }).session(session);
+
+        if (existingEmail) {
+            throw new ApiError(409, "Email already exists.");
+        }
+
+        const existingEnrollment = await Student.findOne({
+            enrollmentNumber: payload.enrollmentNumber,
+            _id: { $ne: student._id }
+        }).session(session);
+
+        if (existingEnrollment) {
+            throw new ApiError(409, "Enrollment number already exists.");
+        }
+
+        const existingRoll = await Student.findOne({
+            rollNumber: payload.rollNumber,
+            _id: { $ne: student._id }
+        }).session(session);
+
+        if (existingRoll) {
+            throw new ApiError(409, "Roll number already exists.");
+        }
+
+        user.firstName = payload.firstName;
+        user.lastName = payload.lastName;
+        user.email = payload.email;
+
+        await user.save({ session });
+
+        student.enrollmentNumber = payload.enrollmentNumber;
+        student.rollNumber = payload.rollNumber;
+        student.department = payload.department;
+        student.semester = payload.semester;
+        student.section = payload.section;
+        student.phone = payload.phone;
+        student.gender = payload.gender;
+
+        await student.save({ session });
+
+        await session.commitTransaction();
+
+        return await Student.findById(student._id)
+            .populate("user", "-password");
+
+    } catch (error) {
+
+        await session.abortTransaction();
+        throw error;
+
+    } finally {
+
+        session.endSession();
+
+    }
+
+};
+
+export const deleteStudent = async (studentId) => {
+
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+        throw new ApiError(404, "Student not found.");
+    }
+
+    const user = await User.findById(student.user);
+
+    if (!user) {
+        throw new ApiError(404, "User not found.");
+    }
+
+    user.status = USER_STATUS.INACTIVE;
+
+    await user.save();
+
+    return {
+        message: "Student deactivated successfully."
+    };
+
+};
