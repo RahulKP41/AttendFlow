@@ -12,6 +12,10 @@ export const loginUser = async ({ email, password }) => {
         email: email.toLowerCase()
     }).select("+password");
 
+    if (user.status !== USER_STATUS.ACTIVE) {
+        throw new ApiError(403, "Your account has been deactivated.");
+    }
+
     if (!user) {
         throw new ApiError(
             401,
