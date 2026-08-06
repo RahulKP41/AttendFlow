@@ -74,7 +74,8 @@ pipeline {
         stage('Push Backend Image') {
             steps {
                 withDockerRegistry(
-                    [credentialsId: 'dockerhub']
+                    credentialsId: 'dockerhub',
+                    url: 'https://index.docker.io/v1/'
                 ) {
 
                     sh """
@@ -89,7 +90,8 @@ pipeline {
         stage('Push Frontend Image') {
             steps {
                 withDockerRegistry(
-                    [credentialsId: 'dockerhub']
+                    credentialsId: 'dockerhub',
+                    url: 'https://index.docker.io/v1/'
                 ) {
 
                     sh """
