@@ -3,8 +3,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = "rahulkp440"
-
         BACKEND_IMAGE = "rahulkp440/attendflow-backend"
         FRONTEND_IMAGE = "rahulkp440/attendflow-frontend"
 
@@ -26,14 +24,6 @@ pipeline {
         stage('Install Backend Dependencies') {
             steps {
                 dir('backend') {
-                    sh 'npm ci'
-                }
-            }
-        }
-
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('frontend') {
                     sh 'npm ci'
                 }
             }
@@ -82,7 +72,6 @@ pipeline {
                     docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
                     docker push ${BACKEND_IMAGE}:latest
                     """
-
                 }
             }
         }
@@ -98,59 +87,42 @@ pipeline {
                     docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
                     docker push ${FRONTEND_IMAGE}:latest
                     """
-
                 }
             }
         }
 
         stage('Deploy Application') {
             steps {
-
-                sh """
+                sh '''
                 docker compose down
-                docker compose pull
                 docker compose up -d
-                """
-
+                '''
             }
         }
 
         stage('Cleanup') {
             steps {
-
-                sh '''
-                docker image prune -f
-                '''
-
+                sh 'docker image prune -f'
             }
         }
-
     }
 
     post {
 
         success {
-
             echo "=================================="
             echo "Pipeline Completed Successfully"
             echo "=================================="
-
         }
 
         failure {
-
             echo "=================================="
             echo "Pipeline Failed"
             echo "=================================="
-
         }
 
         always {
-
             cleanWs()
-
         }
-
     }
-
 }
